@@ -14,25 +14,24 @@ using System.Web.Routing;
 
 namespace Sitecore.Support.Mvc.Pipelines.Response.GetPageItem
 {
-    public class GetFromRouteUrl : Sitecore.Mvc.Pipelines.Response.GetPageItem.GetFromRouteUrl
+  public class GetFromRouteUrl : Sitecore.Mvc.Pipelines.Response.GetPageItem.GetFromRouteUrl
+  {
+    protected override Item ResolveItem(GetPageItemArgs args)
     {
-        protected override Item ResolveItem(GetPageItemArgs args)
-        {
-            string path = this.GetPath(args.RouteData);
-            Item item = Context.Item;
-            if (string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
-            else
-            {
-                SiteContext site = Context.Site;
-                if ((site != null) && path.Equals(site.VirtualFolder.Substring(0, site.VirtualFolder.Length - 1)))
-                {
-                    return null;
-                }
-            }
-            return base.GetItem(path, args);
-        }
+      string path = this.GetPath(args.RouteData);
+
+      if (string.IsNullOrEmpty(path))
+      {
+        return null;
+      }
+
+      SiteContext site = Context.Site;
+      if ((site != null) && (path.StartsWith(site.VirtualFolder.Substring(0, site.VirtualFolder.Length - 1))))
+      {
+        return null;
+      }
+
+      return base.GetItem(path, args);
     }
+  }
 }
